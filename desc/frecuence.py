@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from Types import FrequencyType
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,6 +20,10 @@ class FrequencyAnalysis:
         self.num_classes = num_classes if num_classes else self._sturges_rule()
         self.class_width = class_width if class_width else self._calculate_class_width()
         self.intervals = self._create_intervals()
+        self.absolute_freq = self._calculate_frequencies()
+        self.relative_freq = self.absolute_freq / len(self.data)
+        self.cumulative_freq = np.cumsum(self.absolute_freq)
+        self.cumulative_relative_freq = np.cumsum(self.relative_freq)
 
     def _sturges_rule(self) -> int:
         return int(np.ceil(1 + 3.322 * np.log10(len(self.data))))
@@ -45,33 +50,73 @@ class FrequencyAnalysis:
         ])    
 
     def create_distribution_table(self) -> pd.DataFrame:
-        absolute_freq = self._calculate_frequencies()
-        relative_freq = absolute_freq / len(self.data)
-        cumulative_freq = np.cumsum(absolute_freq)
-        cumulative_relative_freq = np.cumsum(relative_freq)
-
         return pd.DataFrame({
             "I": [f"{lower:.2f} - {upper:.2f}" for lower, upper in self.intervals],
-            "fi": absolute_freq,
-            "hi": relative_freq,
-            "%i": relative_freq * 100,
-            "Fi": cumulative_freq,
-            "Hi": cumulative_relative_freq,
-            "$i": cumulative_relative_freq * 100
+            "fi": self.absolute_freq,
+            "hi": self.relative_freq,
+            "%i": self.relative_freq * 100,
+            "Fi": self.cumulative_freq,
+            "Hi": self.cumulative_relative_freq,
+            "$i": self.cumulative_relative_freq * 100
         })
 
-    def plot_histogram(self, relative=False):
+    def plot_histogram(self, relative=False, polygon=False):
         plt.figure(figsize=(10, 6))
         bins = np.arange(self.min, self.max + self.class_width, self.class_width)
+
         plt.hist(
             self.data,
             bins,
             weights=np.ones_like(self.data) / len(self.data) if relative else None,
             edgecolor='black',
         )
+
+         # Agregar polígono de frecuencia
+        if polygon:
+            bin_centers = (bins[:-1] + bins[1:]) / 2
+            frecuencies = self.relative_freq if relative else self.absolute_freq
+
+            plt.plot(bin_centers, frecuencies, 'o-', label='Frequency Polygon')
+        
         plt.title("Histogram of Data")
         plt.xlabel("Values")
         plt.ylabel("Frequency")
+        plt.show()
+
+    def plot_ogive(self, type_freceuncie: FrequencyType=FrequencyType.ABSOLUTE):
+        """
+        Plotea una ogiva de frecuencia.
+
+        Parámetros:
+        type_freceuncie (FrequencyType): Tipo de frecuencia a plotear. Puede ser:
+            - FrequencyType.ABSOLUTE: Frecuencia absoluta.
+            - FrequencyType.RELATIVE: Frecuencia relativa.
+            - FrequencyType.ABSOLUTE_CUMULATIVE: Frecuencia absoluta acumulada.
+            - FrequencyType.RELATIVE_CUMULATIVE: Frecuencia relativa acumulada.
+
+        Valor por defecto:
+        type_freceuncie = FrequencyType.ABSOLUTE
+
+        Retorna:
+        None
+        """
+
+        dict_type_frecuencies = {
+            'absolute': self.absolute_freq,
+            'relative': self.relative_freq,
+            'absolute_cumulative': self.cumulative_freq,
+            'relative_cumulative': self.cumulative_relative_freq
+        }
+        plt.figure(figsize=(10, 6))
+
+        bins = np.arange(self.min, self.max + self.class_width, self.class_width)
+        bin_centers = (bins[:-1] + bins[1:]) / 2
+        
+        plt.plot(bin_centers, dict_type_frecuencies[type_freceuncie], 'o-', label='Ogive')
+        plt.title("Ogive of Cumulative Frequencies")
+        plt.xlabel("Values")
+        plt.ylabel("Cumulative Frequency")
+        plt.legend()
         plt.show()
 
     def plot_pie_diagram(self):
