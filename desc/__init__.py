@@ -8,6 +8,10 @@ velocity_per_lab = [
     1.8, 0.7, 0.9, 1.0, 0.3, 1.2, 1.8, 1.0
 ]
 
+ 
+
 def main():
-    velocity_analisys = FrequencyAnalysis(velocity_per_lab)
-    velocity_analisys.plot_histogram()
+    velocity_analisys = FrequencyAnalysis(velocity_per_lab, class_width=0.25)
+    #velocity_analisys.plot_histogram()
+    df = velocity_analisys.create_distribution_table()
+    print(df)

@@ -10,7 +10,11 @@ python = "^3.10"
 matplotlib = "^3.9.2"
 pandas = "^2.2.3"
 numpy = "^2.1.1"
+seaborn = "^0.13.2"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]

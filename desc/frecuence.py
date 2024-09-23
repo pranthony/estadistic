@@ -3,6 +3,7 @@ from typing import List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 
 class FrequencyAnalysis:
@@ -22,10 +23,10 @@ class FrequencyAnalysis:
     def _sturges_rule(self) -> int:
         return int(np.ceil(1 + 3.322 * np.log10(len(self.data))))
 
-    def _calculate_class_width(self) -> float:
+    def _calculate_class_width(self) ->  float|int:
         return np.ceil(self.range / self.num_classes)
 
-    def _create_intervals(self) -> List[Tuple[float, float]]:
+    def _create_intervals(self) -> List[Tuple[float|int, float|int]]:
         return [
             (
               self.min + i * self.class_width,
@@ -36,9 +37,12 @@ class FrequencyAnalysis:
 
     def _calculate_frequencies(self) -> np.ndarray:
         return np.array([
-            ((self.data >= lower) & (self.data < upper)).sum()
-            for lower, upper in self.intervals
-        ])
+            (
+                (self.data >= lower) & 
+                (self.data <= upper if i+1==self.num_classes else self.data < upper)
+            ).sum()
+            for i, (lower, upper) in enumerate(self.intervals)
+        ])    
 
     def create_distribution_table(self) -> pd.DataFrame:
         absolute_freq = self._calculate_frequencies()
@@ -58,15 +62,13 @@ class FrequencyAnalysis:
 
     def plot_histogram(self, relative=False):
         plt.figure(figsize=(10, 6))
-
+        bins = np.arange(self.min, self.max + self.class_width, self.class_width)
         plt.hist(
             self.data,
-            bins=self.num_classes,
+            bins,
             weights=np.ones_like(self.data) / len(self.data) if relative else None,
             edgecolor='black',
-
         )
-        
         plt.title("Histogram of Data")
         plt.xlabel("Values")
         plt.ylabel("Frequency")
