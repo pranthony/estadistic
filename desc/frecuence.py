@@ -63,24 +63,49 @@ class FrequencyAnalysis:
         })
 
     def plot_histogram(self, relative=False, polygon=False):
-        plt.figure(figsize=(10, 6))
+        # Crear una nueva figura y ejes
+        fig, ax = plt.subplots(figsize=(10, 6))
         
-        plt.hist(
+        # Calcular los pesos si es relativo
+        weights = np.ones_like(self.data) / len(self.data) if relative else None
+        
+        # Crear el histograma
+        hist = ax.hist(
             self.data,
             self.bins,
-            weights=np.ones_like(self.data) / len(self.data) if relative else None,
+            weights=weights,
             edgecolor='black',
         )
 
-         # Agregar polígono de frecuencia
-        if polygon:
-            frecuencies = self.relative_freq if relative else self.absolute_freq
-            plt.plot(self.bins_center, frecuencies, 'o-', label='Frequency Polygon')
+        frecuencias = self.relative_freq if relative else self.absolute_freq
         
-        plt.title("Histogram of Data")
-        plt.xlabel("Values")
-        plt.ylabel("Frequency")
-        plt.show()
+        # Etiquetar cada barra con su frecuencia
+        for rect, freq in zip(hist[2], frecuencias):
+            height = rect.get_height()
+            ax.text(
+                rect.get_x() + rect.get_width() / 2,
+                height,
+                f'{round(freq, 2)}',
+                va='bottom',
+                ha='center'
+            )
+        
+        # Agregar polígono de frecuencia si se solicita
+        if polygon:
+            ax.plot(self.bins_center, frecuencias, 'o-', label='Polígono de frecuencia')
+            ax.legend()
+        
+        # Configurar título y etiquetas de ejes
+        ax.set_title('Histograma')
+        ax.set_xlabel('Intervalos')
+        ax.set_ylabel(f"Frecuencia {'relativa' if relative else 'absoluta'}")
+        
+        # Ajustar el diseño
+        plt.tight_layout()
+
+        plt.close(fig)
+        # Retornar la figura
+        return fig
 
     def plot_ogive(self, type_freceuncie: FrequencyType=FrequencyType.ABSOLUTE.value):
         """
