@@ -4,7 +4,6 @@ from Types import FrequencyType
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 
 
 class FrequencyAnalysis:
@@ -24,6 +23,8 @@ class FrequencyAnalysis:
         self.relative_freq = self.absolute_freq / len(self.data)
         self.cumulative_freq = np.cumsum(self.absolute_freq)
         self.cumulative_relative_freq = np.cumsum(self.relative_freq)
+        self.bins = np.arange(self.min, self.max + self.class_width, self.class_width)
+        self.bins_center = (self.bins[:-1] + self.bins[1:]) / 2
 
     def _sturges_rule(self) -> int:
         return int(np.ceil(1 + 3.322 * np.log10(len(self.data))))
@@ -52,6 +53,7 @@ class FrequencyAnalysis:
     def create_distribution_table(self) -> pd.DataFrame:
         return pd.DataFrame({
             "I": [f"{lower:.2f} - {upper:.2f}" for lower, upper in self.intervals],
+            "mi": self.bins_center,
             "fi": self.absolute_freq,
             "hi": self.relative_freq,
             "%i": self.relative_freq * 100,
@@ -62,28 +64,25 @@ class FrequencyAnalysis:
 
     def plot_histogram(self, relative=False, polygon=False):
         plt.figure(figsize=(10, 6))
-        bins = np.arange(self.min, self.max + self.class_width, self.class_width)
-
+        
         plt.hist(
             self.data,
-            bins,
+            self.bins,
             weights=np.ones_like(self.data) / len(self.data) if relative else None,
             edgecolor='black',
         )
 
          # Agregar polígono de frecuencia
         if polygon:
-            bin_centers = (bins[:-1] + bins[1:]) / 2
             frecuencies = self.relative_freq if relative else self.absolute_freq
-
-            plt.plot(bin_centers, frecuencies, 'o-', label='Frequency Polygon')
+            plt.plot(self.bins_center, frecuencies, 'o-', label='Frequency Polygon')
         
         plt.title("Histogram of Data")
         plt.xlabel("Values")
         plt.ylabel("Frequency")
         plt.show()
 
-    def plot_ogive(self, type_freceuncie: FrequencyType=FrequencyType.ABSOLUTE):
+    def plot_ogive(self, type_freceuncie: FrequencyType=FrequencyType.ABSOLUTE.value):
         """
         Plotea una ogiva de frecuencia.
 
@@ -108,11 +107,8 @@ class FrequencyAnalysis:
             'relative_cumulative': self.cumulative_relative_freq
         }
         plt.figure(figsize=(10, 6))
-
-        bins = np.arange(self.min, self.max + self.class_width, self.class_width)
-        bin_centers = (bins[:-1] + bins[1:]) / 2
         
-        plt.plot(bin_centers, dict_type_frecuencies[type_freceuncie], 'o-', label='Ogive')
+        plt.plot(self.bins_center, dict_type_frecuencies[type_freceuncie], 'o-', label='Ogive')
         plt.title("Ogive of Cumulative Frequencies")
         plt.xlabel("Values")
         plt.ylabel("Cumulative Frequency")
