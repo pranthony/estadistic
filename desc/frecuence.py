@@ -45,7 +45,7 @@ class FrequencyAnalysis:
         return np.array([
             (
                 (self.data >= lower) & 
-                (self.data <= upper if i+1==self.num_classes else self.data < upper)
+                (self.data <= upper if (i + 1) == self.num_classes else self.data < upper)
             ).sum()
             for i, (lower, upper) in enumerate(self.intervals)
         ])    
@@ -107,43 +107,93 @@ class FrequencyAnalysis:
         # Retornar la figura
         return fig
 
-    def plot_ogive(self, type_freceuncie: FrequencyType=FrequencyType.ABSOLUTE.value):
+    def plot_ogive(self, type_frecuency: FrequencyType=FrequencyType.ABSOLUTE):
         """
         Plotea una ogiva de frecuencia.
 
         Parámetros:
-        type_freceuncie (FrequencyType): Tipo de frecuencia a plotear. Puede ser:
+        type_frecuency (FrequencyType): Tipo de frecuencia a plotear. Puede ser:
             - FrequencyType.ABSOLUTE: Frecuencia absoluta.
             - FrequencyType.RELATIVE: Frecuencia relativa.
             - FrequencyType.ABSOLUTE_CUMULATIVE: Frecuencia absoluta acumulada.
             - FrequencyType.RELATIVE_CUMULATIVE: Frecuencia relativa acumulada.
 
         Valor por defecto:
-        type_freceuncie = FrequencyType.ABSOLUTE
+        type_frecuency = FrequencyType.ABSOLUTE
 
         Retorna:
         None
         """
 
         dict_type_frecuencies = {
-            'absolute': self.absolute_freq,
-            'relative': self.relative_freq,
-            'absolute_cumulative': self.cumulative_freq,
-            'relative_cumulative': self.cumulative_relative_freq
+            FrequencyType.ABSOLUTE: (
+                self.absolute_freq,
+                'absoluta'
+            ),
+            FrequencyType.RELATIVE: (
+                self.relative_freq,
+                'relativa'
+            ),
+            FrequencyType.ABSOLUTE_CUMULATIVE: (
+                self.cumulative_freq,
+                'absoluta acumulada'
+            ),
+            FrequencyType.RELATIVE_CUMULATIVE: (
+                self.cumulative_relative_freq,
+                'relativa acumulada'
+            ),
+            FrequencyType.ABSOLUTE_CUMULATIVE_LT: (
+                list(reversed(self.cumulative_freq)),
+                'absoluta acumulada (menor que)'
+            ),
+            FrequencyType.RELATIVE_CUMULATIVE_LT: (
+                list(reversed(self.cumulative_relative_freq)),
+                'relativa acumulada (menor que)'
+            )
         }
-        plt.figure(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 6))
         
-        plt.plot(self.bins_center, dict_type_frecuencies[type_freceuncie], 'o-', label='Ogive')
-        plt.title("Ogive of Cumulative Frequencies")
-        plt.xlabel("Values")
-        plt.ylabel("Cumulative Frequency")
-        plt.legend()
-        plt.show()
+        ax.plot(
+            self.bins_center,
+            dict_type_frecuencies[type_frecuency][0],
+            'o-', label='Ogiva'
+        )
+
+        # Etiquetar cada barra con su frecuencia
+        for rect, freq in zip(self.bins_center, dict_type_frecuencies[type_frecuency][0]):
+            ax.text(
+                rect,
+                freq,
+                f'{round(freq, 2)}',
+                va='bottom',
+                ha='center'
+            )
+        
+        ax.set_title("Diagrama de ogiva")
+        ax.set_xlabel("Intervalos")
+        ax.set_ylabel(f'Frecuencia {dict_type_frecuencies[type_frecuency][1]}')
+        ax.legend()
+
+        # Ajustar el diseño
+        plt.tight_layout()
+
+        plt.close(fig)
+        return fig    
 
     def plot_pie_diagram(self):
-      plt.pie(self._calculate_frequencies(), labels=[f"{lower:.2f} - {upper:.2f}" for lower, upper in self.intervals], autopct='%1.1f%%')
-      plt.title("Pie Diagram of Data")
-      plt.show()
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        ax.pie(
+            self.absolute_freq,
+            labels=[f"{lower} - {upper}" for lower, upper in self.intervals],
+            autopct='%1.1f%%'
+        )
+        
+        ax.set_title("Diagrama de torta")
+
+        plt.close()
+
+        return fig
 
     def calculate_statistics(self) -> dict:
         return {
