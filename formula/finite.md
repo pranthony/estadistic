@@ -7,12 +7,11 @@ $$
 Muestra sin remplazamiento
 
 Nota: consideraciones
-$$
-d=|μ-\bar{x}|
-$$
-$$
-d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
-$$
+
+$$d=|μ-\bar{x}|$$
+
+$$d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}$$
+
 $$
 var(\bar{x})=\frac{\sigma^2}{n}
 $$
