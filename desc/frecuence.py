@@ -33,13 +33,13 @@ class FrequencyAnalysis:
         return np.ceil(self.range / self.num_classes)
 
     def _create_intervals(self) -> List[Tuple[float|int, float|int]]:
-        return [
+        return np.array([
             (
               self.min + i * self.class_width,
               self.min + (i + 1) * self.class_width
             )
               for i in range(self.num_classes)
-        ]
+        ])
 
     def _calculate_frequencies(self) -> np.ndarray:
         return np.array([
@@ -63,7 +63,7 @@ class FrequencyAnalysis:
             "Fi": self.cumulative_freq,
             "Hi": self.cumulative_relative_freq,
             "$i": self.cumulative_relative_freq * 100
-        })
+        }, range(1, len(self.intervals)+1))
 
     def plot_histogram(self, relative=False, polygon=False):
         # Crear una nueva figura y ejes
