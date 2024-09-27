@@ -52,7 +52,10 @@ class FrequencyAnalysis:
 
     def create_distribution_table(self) -> pd.DataFrame:
         return pd.DataFrame({
-            "I": [f"{lower:.2f} - {upper:.2f}" for lower, upper in self.intervals],
+            "I": [ 
+                f"[ {lower} - {upper}{' )' if i + 1 != len(self.intervals) else ' ]'}"
+                for i, (lower, upper) in enumerate(self.intervals)
+            ],
             "mi": self.bins_center,
             "fi": self.absolute_freq,
             "hi": self.relative_freq,

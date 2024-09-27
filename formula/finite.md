@@ -1,5 +1,3 @@
-## Demostración del exámen
-
 $$
 n=\frac{Z_0^2pqN}{e^2(N-1)+Z_0^2pq}
 $$
