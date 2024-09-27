@@ -58,8 +58,7 @@ Usando las propiedades de los logaritmos:
 
 $$ \log_{2}(n) = k - 1 $$
 
-**Paso 8: Solución final**
-
+**Paso 8: Solución final**  
 Finalmente, despejamos ( k ):
 
 $$ k = 1 + \log_{2}(n) $$
