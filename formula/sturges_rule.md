@@ -64,6 +64,5 @@ Finalmente, despejamos ( k ):
 
 $$ k = 1 + \log_{2}(n) $$
 
-**Conclusión**
-
+**Conclusión**  
 Hemos derivado la fórmula de la Regla de Sturges, que nos permite calcular el número óptimo de clases ( $k$ ) para un histograma dado el número de observaciones ( $n$ ). Esta fórmula es útil para construir histogramas que representen adecuadamente la distribución de los datos.
