@@ -1,9 +1,6 @@
-# %matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools  import product
-
-plt.rcParams['figure.figsize'] = (10,6)
 
 def function_solow(axe, a_s, s_s, b_s, time_series=50):
     k = np.empty(50)
@@ -20,8 +17,6 @@ def function_solow(axe, a_s, s_s, b_s, time_series=50):
     axe.set_ylabel('capital')
     axe.grid(lw=0.2)
     axe.legend(loc='upper left', frameon=True)
-
-# Allocate memory for time series
 
 fig, axes = plt.subplots(3, 1, figsize=(8, 16))
 
