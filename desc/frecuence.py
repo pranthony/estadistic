@@ -4,7 +4,7 @@ from Types import FrequencyType
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
+import statistics as st
 
 class FrequencyAnalysis:
     def __init__(
@@ -13,21 +13,23 @@ class FrequencyAnalysis:
         class_width: float = 0.0
     ):
         self.data = np.array(data)
+        self.data_len = len(self.data)
         self.min = self.data.min()
         self.max = self.data.max()
+        self.mean = np.mean(self.data)
         self.range = self.max - self.min
         self.num_classes = num_classes if num_classes else self._sturges_rule()
         self.class_width = class_width if class_width else self._calculate_class_width()
         self.intervals = self._create_intervals()
         self.absolute_freq = self._calculate_frequencies()
-        self.relative_freq = self.absolute_freq / len(self.data)
+        self.relative_freq = self.absolute_freq / self.data_len
         self.cumulative_freq = np.cumsum(self.absolute_freq)
         self.cumulative_relative_freq = np.cumsum(self.relative_freq)
         self.bins = np.arange(self.min, self.max + self.class_width, self.class_width)
         self.bins_center = (self.bins[:-1] + self.bins[1:]) / 2
 
     def _sturges_rule(self) -> int:
-        return int(np.ceil(1 + 3.322 * np.log10(len(self.data))))
+        return int(np.ceil(1 + 3.322 * np.log10(self.data_len)))
 
     def _calculate_class_width(self) ->  float|int:
         return np.ceil(self.range / self.num_classes)
@@ -70,7 +72,7 @@ class FrequencyAnalysis:
         fig, ax = plt.subplots(figsize=(10, 6))
         
         # Calcular los pesos si es relativo
-        weights = np.ones_like(self.data) / len(self.data) if relative else None
+        weights = np.ones_like(self.data) / self.data_len if relative else None
         
         # Crear el histograma
         hist = ax.hist(
@@ -200,10 +202,14 @@ class FrequencyAnalysis:
 
     def calculate_statistics(self) -> dict:
         return {
-            "Mean": np.mean(self.data),
+            "Mean": self.mean,
             "Median": np.median(self.data),
             "Standard Deviation": np.std(self.data),
             "Variance": np.var(self.data),
             "Skewness": pd.Series(self.data).skew(),
             "Kurtosis": pd.Series(self.data).kurtosis()
         }
+    
+    def calculate_varianze(self):
+        
+        return 1/(self.data_len-1)*(sum(self.data**2)-self.data_len*(self.mean**2))
