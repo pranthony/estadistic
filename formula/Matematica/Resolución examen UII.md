@@ -34,6 +34,7 @@ Donde $m$:
 $$m = \frac{40-20}{200-160}=\frac{20}{40}=\frac{1}{2}$$
 
 Y $b$:
+
 $$b=40-200\cdot\frac{1}{2}=40-100=-60$$
 
 Entonces la ecuación de la oferta es:
@@ -248,7 +249,6 @@ $$x=\frac{-960}{0.06}=-16000$$
 $$x=\frac{320}{0.06}=5333.\overline{3}$$
 
 $$CS=(1660, -960, 320)$$
-
 
 Interpretación de los resultados
 

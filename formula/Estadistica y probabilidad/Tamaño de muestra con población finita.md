@@ -1,3 +1,4 @@
+## Demostración de la formula de la formula para población finita
 $$
 n=\frac{Z_0^2pqN}{e^2(N-1)+Z_0^2pq}
 $$
